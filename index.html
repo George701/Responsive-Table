@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <!--jQuery-->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="css/main.css">
+        <title>Table</title>
+    </head>
+    <body>
+
+    <div class="container">
+        <div class="table-container">
+            <h2>Table</h2>
+            <div class="date-controllers">
+                <span>
+                    <span>From: </span>
+                    <input type="date" id="dateFrom" onchange="calendarHandler()">
+                </span>
+                <span>
+                    <span>Until: </span>
+                    <input type="date" id="dateUntil" onchange="calendarHandler()">
+                </span>
+            </div>
+            <table id="customers">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                        <th>Message</th>
+                        <th>
+                            <select name="" id="selectState" class="th-select" onchange="changeState()">
+                                <option value="default">Status</option>
+                                <option value="0">OK</option>
+                                <option value="1">Alert</option>
+                                <option value="2">Danger</option>
+                                <option value="3">Error</option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="dataTable">
+
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="form-container">
+            <h2>Enter Data to Display</h2>
+            <form action="insert.php" method="post">
+                <input type="text" id="name" name="name" placeholder="enter name"><br><br>
+                <input type="number" id="action" name="action" placeholder="enter action" min="0" max="4"><br><br>
+                <input type="number" id="message" name="message" placeholder="enter message" min="0" max="9"><br><br>
+                <input type="number" id="status" name="status" placeholder="enter status" min="0" max="3"><br><br>
+                <button id="displayData">Add data</button>
+            </form>
+            <p id="result"></p>
+        </div>
+
+    </div>
+
+
+        <script src="js/main.js"></script>
+    </body>
+</html>

@@ -1,0 +1,84 @@
+body{
+    margin: 50px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+input{
+    width: 150px;
+}
+
+.container{
+    display: flex;
+    flex-direction: row;
+}
+
+.table-container{
+    flex: 2;
+}
+
+.form-container{
+    flex: 1;
+    margin: 0 50px;
+}
+
+.form-container h2 {
+    margin: 0 0 84px 0;
+}
+
+#customers {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+}
+
+#customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.txt-td-decor{
+    font-weight:bold;
+}
+
+.ok{
+    background-color: #d3ffc9;
+}
+
+.warning{
+    background-color: #fcffa8;
+}
+
+.danger{
+    background-color: #ffbcb1;
+}
+
+.eer{
+    background-color: #bfbfbf;
+}
+
+.th-select{
+    width: 100%;
+    border: none;
+    font-size: 15px;
+    outline: none;
+    color: #fff;
+    text-align: center!important;
+    background-color: #4CAF50;
+    font-weight: bold;
+}
+
+.date-controllers{
+    margin: 0 0 20px 0;
+}
