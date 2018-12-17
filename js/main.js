@@ -4,15 +4,11 @@
 ==================================================
 */
 let ajax = new XMLHttpRequest();
-let method = "GET";
+let method = "POST";
 let url = "dataTable.php";
-let test = 0;
-let cur_length = 0;
-let test_data = [];
+let _TABLE_DATA = [];
 let data = [];
 let current_state = "Regular";
-
-let status = 0;
 let timeVars = [];
 
 let action_msge = [
@@ -55,6 +51,11 @@ let c_day = currentDate.getDate();
 let c_month = currentDate.getMonth(); //Be careful! January is 0 not 1
 let c_year = currentDate.getFullYear();
 
+if(c_day < 10){
+    c_day = "0"+c_day;
+} else if(c_month < 10){
+    c_month = "0"+c_month;
+}
 timeVars[0] = c_year + "-" +(c_month + 1) + "-" + c_day;
 
 /*
@@ -63,12 +64,17 @@ timeVars[0] = c_year + "-" +(c_month + 1) + "-" + c_day;
 ==================================================
 */
 
-let pastDate = new Date(new Date().setDate(new Date().getDate()-1));
+let pastDate = new Date(new Date().setDate(new Date().getDate()-7));
 
 let p_day = pastDate.getDate();
 let p_month = pastDate.getMonth(); //Be careful! January is 0 not 1
 let p_year = pastDate.getFullYear();
 
+if(p_day < 10){
+    p_day = "0"+p_day;
+} else if(p_month < 10){
+    p_month = "0"+p_month;
+}
 timeVars[1]  = p_year + "-" +(p_month + 1) + "-" + p_day;
 
 /*
@@ -108,33 +114,69 @@ $("form").submit(function(e){
 ==================================================
 */
 dataToIn("dateFrom", "dateUntil", timeVars[0], timeVars[1]);
+let last_id = 0;
+let readyState = true;
+let params;
+let primordial = 0;
 
-setInterval(checkData, 1000);
+setInterval(function(){
+    console.log(_TABLE_DATA);
+    console.log(primordial);
+    if(readyState === true){
+        readyState = false;
 
-function checkData(){
-
-    ajax.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            test_data = JSON.parse(this.responseText);
+        try{
+            last_id = _TABLE_DATA[0]['id'];
+            console.log("Trying to make val to last_id: "+last_id);
+        }catch{
+            console.log("Ooops");
         }
-        return test_data;
-    };
 
-    ajax.open(method, url, true);
-    ajax.send();
+        params = "last_id="+last_id;
 
-    cur_length = test_data.length;
+        ajax.open(method, url, true);
 
-    if(test<cur_length || status===1) {
+        ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-        data = limitData(test_data, timeVars[0], timeVars[1]);
+        if(last_id === 0){
+            console.log("Undefined");
+            ajax.send();
+        }else{
+            console.log("Defined");
+            last_id = parseInt(last_id);
+            ajax.send(params);
+        }
+        ajax.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                console.log(current_state);
 
-        drawAndCheck(data, "dataTable");
+                let raw_array = JSON.parse(this.responseText);
+                console.log(raw_array);
 
-        test = cur_length;
-        status = 0;
+                if (raw_array.length !== 0) {
+
+                    if (primordial !== 0) {
+                        for (let i = 0; i < raw_array.length ; i++) {
+                            _TABLE_DATA.unshift(raw_array[i]);
+                        }
+                    } else {
+
+                        for (let i = 0; i < raw_array.length; i++) {
+                            _TABLE_DATA.push(raw_array[i]);
+                        }
+                        primordial++;
+                    }
+                }
+                data = limitData(_TABLE_DATA);
+
+                drawAndCheck(data, "dataTable");
+            }
+            readyState = true;
+        };
     }
-}
+
+},1000);
+
 
 /*
 ==================================================
@@ -143,7 +185,7 @@ function checkData(){
 */
 function buildTable(arr, id){
     let html = "";
-    arr = arr.reverse();
+    // arr = arr.reverse();
 
 
     for (let i = 0; i < arr.length; i++) {
@@ -252,7 +294,7 @@ function buildNewArray(old_arr, index){
             temp_arr.push(old_arr[i]);
         }
     }
-
+    // temp_arr = temp_arr.reverse();
     return temp_arr;
 }
 
@@ -262,7 +304,7 @@ function buildNewArray(old_arr, index){
 ==================================================
 */
 
-let changeState = function(){
+function changeState(){
     let selected_state = document.getElementById('selectState').value;
 
     switch(selected_state){
@@ -289,14 +331,18 @@ let changeState = function(){
 };
 
 function drawAndCheck(arr, id){
-    let expres_status = arr[parseInt(arr.length) - 1]['Status'];
-    if(current_state === 'Success' && expres_status !== '2'){
+    let express_status = arr[0]['Status'];
+    if(current_state === 'Success' && express_status !== '2'){
+        console.log("Hello form success");
         buildTable(buildNewArray(arr, '0'), id);
-    } else if(current_state === 'Warning' && expres_status !== '2'){
+    } else if(current_state === 'Warning' && express_status !== '2'){
+        console.log("Hello form warning");
         buildTable(buildNewArray(arr, '1'), id);
-    }else if(current_state === 'Danger' && expres_status !== '2'){
+    }else if(current_state === 'Danger' && express_status !== '2'){
+        console.log("Hello form danger");
         buildTable(buildNewArray(arr, '2'), id);
-    }else if(current_state === 'Error' && expres_status !== '2'){
+    }else if(current_state === 'Error' && express_status !== '2'){
+        console.log("Hello form error");
         buildTable(buildNewArray(arr, '3'), id);
     }else{
         buildTable(arr, id);
@@ -313,6 +359,7 @@ function drawAndCheck(arr, id){
 */
 
 function convertForInput(x){
+    // console.log(x);
     x = String(x);
     x = x.slice(0,10);
     x = x.split("/").reverse().join("-");
@@ -341,19 +388,16 @@ function calendarHandler(){
     timeVars[0] = document.getElementById("dateFrom").value;
     timeVars[1] = document.getElementById("dateUntil").value;
 
-    status = 1;
+    // status = 1;
     return [timeVars[0], timeVars[1]];
 }
 
-function limitData(arr, time1, time2){
-
+function limitData(arr){
     let temp_arr = [];
-
-    // console.log(time1 + " - " + time2);
 
     for(let i = 0; i < arr.length; i++){
         let date_val = convertForInput(arr[i]['Time']);
-        if(date_val <= time1 && date_val >= time2){
+        if(date_val <= timeVars[0] && date_val >= timeVars[1]){
             temp_arr.push(arr[i]);
         }
     }
@@ -361,4 +405,3 @@ function limitData(arr, time1, time2){
     return temp_arr;
 
 }
-
